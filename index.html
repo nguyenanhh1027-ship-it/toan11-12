@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Bài Kiểm Tra Toán Lớp 5 - Số Thập Phân & Hình Tam Giác</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Nunito', sans-serif;
+		}
+
+		.option-label {
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+
+		.option-input:checked+.option-content {
+			background-color: #E0F2FE;
+			border-color: #0284C7;
+			color: #0369A1;
+		}
+
+		.correct-answer {
+			background-color: #DCFCE7 !important;
+			border-color: #22C55E !important;
+			color: #15803D !important;
+		}
+
+		.wrong-answer {
+			background-color: #FEE2E2 !important;
+			border-color: #EF4444 !important;
+			color: #B91C1C !important;
+		}
+
+		.hidden {
+			display: none;
+		}
+	</style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+	<!-- Header -->
+	<header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-10">
+		<div class="max-w-3xl mx-auto flex justify-between items-center">
+			<h1 class="text-lg md:text-xl font-bold">Toán Lớp 5: Số Thập Phân & Hình Học</h1>
+			<div id="timer" class="font-mono text-lg bg-blue-700 px-3 py-1 rounded hidden">00:00</div>
+		</div>
+	</header>
+
+	<main class="max-w-3xl mx-auto p-4 pb-20">
+
+		<!-- Welcome Screen -->
+		<div id="welcome-screen" class="bg-white rounded-xl shadow-lg p-8 text-center mt-10">
+			<div class="mb-6">
+				<svg class="w-20 h-20 mx-auto text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+					</path>
+				</svg>
+			</div>
+			<h2 class="text-2xl font-bold text-gray-800 mb-2">Bài Kiểm Tra Trắc Nghiệm</h2>
+			<p class="text-gray-600 mb-6">Chủ đề: Số thập phân và Hình tam giác<br>Số lượng: 30 câu hỏi</p>
+
+				<div class="mb-6 max-w-xs mx-auto text-left">
+					<label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên học sinh:</label>
+					<input type="text" id="student-name" class="w-full border-gray-300 rounded-md shadow-sm border p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nhập tên của em...">
+            </div>
+
+					<button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg w-full md:w-auto">
+                Bắt đầu làm bài
+            </button>
+				</div>
+
+				<!-- Quiz Container -->
+				<div id="quiz-container" class="hidden space-y-6 mt-4">
+					<!-- Questions will be inserted here by JS -->
+				</div>
+
+				<!-- Submit Button -->
+				<div id="submit-section" class="hidden mt-8 text-center">
+					<button onclick="submitQuiz()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-10 rounded-lg shadow-lg text-lg transition">
+                Nộp bài và Xem điểm
+            </button>
+				</div>
+
+				<!-- Result Screen -->
+				<div id="result-screen" class="hidden bg-white rounded-xl shadow-lg p-8 text-center mt-10 mb-10">
+					<h2 class="text-3xl font-bold text-gray-800 mb-4">Kết Quả</h2>
+					<div class="text-5xl font-bold text-blue-600 mb-2" id="score-display">0/30</div>
+					<p class="text-gray-600 text-lg mb-6" id="score-percent">0%</p>
+					<p class="text-gray-700 mb-6" id="feedback-msg">Hãy cố gắng hơn nhé!</p>
+
+					<div class="flex justify-center gap-4">
+						<button onclick="reviewAnswers()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition">
+                    Xem chi tiết bài làm
+                </button>
+						<button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition">
+                    Làm lại
+                </button>
+					</div>
+				</div>
+
+	</main>
+
+	<script>
+		// Data: 30 Questions
+        const questions = [
+            { id: 1, q: "Số thập phân gồm 'ba mươi hai đơn vị, tám phần mười, năm phần trăm' được viết là:", options: ["32,85", "32,805", "32,085", "302,85"], correct: 0, explain: "32 đơn vị, 8 phần mười, 5 phần trăm viết là 32,85." },
+            { id: 2, q: "Chữ số 7 trong số 24,567 có giá trị là:", options: ["7 đơn vị", "7 phần mười", "7 phần trăm", "7 phần nghìn"], correct: 3, explain: "Chữ số 7 đứng ở vị trí thứ 3 sau dấu phẩy nên là hàng phần nghìn." },
+            { id: 3, q: "Phân số thập phân 834/100 được viết dưới dạng số thập phân là:", options: ["0,834", "8,34", "83,4", "834,0"], correct: 1, explain: "Chia 834 cho 100 ta lùi dấu phẩy sang trái 2 chữ số -> 8,34." },
+            { id: 4, q: "Hỗn số 3 và 2/5 viết dưới dạng số thập phân là:", options: ["3,2", "3,5", "3,4", "3,25"], correct: 2, explain: "2/5 = 4/10 = 0,4. Vậy 3 và 2/5 = 3,4." },
+            { id: 5, q: "Số lớn nhất trong các số: 8,09; 7,99; 8,89; 8,9 là:", options: ["8,09", "7,99", "8,89", "8,9"], correct: 3, explain: "8,9 = 8,90. 8,90 > 8,89." },
+            { id: 6, q: "Kết quả của phép tính 35,88 + 19,36 là:", options: ["55,24", "54,24", "55,14", "45,24"], correct: 0, explain: "Cộng thẳng hàng: 8+6=14 nhớ 1, 8+3=11 nhớ 1 là 12..." },
+            { id: 7, q: "Tìm x biết: x - 2,5 = 4,7", options: ["x = 2,2", "x = 6,2", "x = 7,2", "x = 7,12"], correct: 2, explain: "x = 4,7 + 2,5 = 7,2." },
+            { id: 8, q: "Kết quả của phép tính 12,5 x 4 là:", options: ["50", "500", "48,5", "5,0"], correct: 0, explain: "12,5 x 4 = 50,0." },
+            { id: 9, q: "Tính nhẩm: 34,5 x 0,1 =", options: ["345", "3,45", "0,345", "34,50"], correct: 1, explain: "Nhân 0,1 là lùi dấu phẩy sang trái 1 hàng." },
+            { id: 10, q: "Kết quả của phép chia 7 : 2 là:", options: ["3 dư 1", "3,5", "3,1", "0,35"], correct: 1, explain: "7 chia 2 được 3,5." },
+            { id: 11, q: "Diện tích hình tam giác có độ dài đáy 10cm và chiều cao 8cm là:", options: ["80 cm²", "40 cm²", "18 cm²", "40 cm"], correct: 1, explain: "(10 x 8) : 2 = 40." },
+            { id: 12, q: "Một hình tam giác có diện tích 30m², độ dài đáy là 12m. Chiều cao tương ứng là:", options: ["2,5 m", "5 m", "360 m", "10 m"], correct: 1, explain: "h = (30 x 2) : 12 = 5." },
+            { id: 13, q: "3kg 5g = ... kg. Số thích hợp điền vào chỗ chấm là:", options: ["3,5", "3,05", "3,005", "35"], correct: 2, explain: "5g = 0,005kg. Vậy là 3,005." },
+            { id: 14, q: "Phép tính 15,6 : 100 có kết quả là:", options: ["1560", "1,56", "0,156", "0,0156"], correct: 2, explain: "Chia 100 lùi dấu phẩy sang trái 2 hàng." },
+            { id: 15, q: "Tìm số tự nhiên x, biết: 0,9 < x < 1,2", options: ["0", "1", "2", "1,1"], correct: 1, explain: "Số tự nhiên lớn hơn 0,9 và nhỏ hơn 1,2 chỉ có 1." },
+            { id: 16, q: "Tam giác vuông có hai cạnh góc vuông lần lượt là 3cm và 4cm. Diện tích là:", options: ["12 cm²", "6 cm²", "7 cm²", "14 cm²"], correct: 1, explain: "(3 x 4) : 2 = 6." },
+            { id: 17, q: "Tỉ số phần trăm của 3 và 4 là:", options: ["0,75%", "75%", "34%", "133%"], correct: 1, explain: "3 : 4 = 0,75 = 75%." },
+            { id: 18, q: "Tính: 20,25 - 12,8 =", options: ["8,45", "7,45", "8,65", "7,35"], correct: 1, explain: "20,25 - 12,80 = 7,45." },
+            { id: 19, q: "Điền dấu thích hợp: 45,2 ... 45,19", options: [">", "<", "=", "Không so sánh được"], correct: 0, explain: "45,20 > 45,19." },
+            { id: 20, q: "Mua 5 quyển vở hết 22.500đ. Mua 8 quyển vở như thế hết bao nhiêu tiền?", options: ["36.000đ", "40.000đ", "35.000đ", "32.000đ"], correct: 0, explain: "1 quyển = 4.500đ. 8 quyển = 4.500 x 8 = 36.000đ." },
+            { id: 21, q: "Khu đất HCN dài 200m, rộng 150m. Diện tích ra héc-ta là:", options: ["3 ha", "30 ha", "0,3 ha", "300 ha"], correct: 0, explain: "200x150 = 30.000m² = 3ha." },
+            { id: 22, q: "Kết quả của 4,5 x 0,5 bằng kết quả phép tính nào?", options: ["4,5 : 2", "4,5 : 5", "4,5 x 2", "4,5 x 5"], correct: 0, explain: "Nhân 0,5 tương đương chia 2." },
+            { id: 23, q: "Số dư của phép chia 23 : 4 là bao nhiêu nếu thương là số tự nhiên?", options: ["0", "3", "2", "1"], correct: 1, explain: "23 = 4 x 5 + 3." },
+            { id: 24, q: "Tìm y: y x 10 = 5,6", options: ["y = 56", "y = 0,56", "y = 0,056", "y = 560"], correct: 1, explain: "y = 5,6 : 10 = 0,56." },
+            { id: 25, q: "Tam giác có đáy gấp lên 2 lần, chiều cao giữ nguyên thì diện tích sẽ:", options: ["Tăng gấp 2 lần", "Không đổi", "Tăng gấp 4 lần", "Giảm 2 lần"], correct: 0, explain: "Diện tích tỉ lệ thuận với đáy." },
+            { id: 26, q: "Tính nhanh: 1,1 + 2,2 + 3,3 + 4,4 =", options: ["10", "11", "12", "10,9"], correct: 1, explain: "(1,1+4,4) + (2,2+3,3) = 5,5 + 5,5 = 11." },
+            { id: 27, q: "Kết quả phép tính 100 - 34,5 là:", options: ["66,5", "65,5", "75,5", "65,05"], correct: 1, explain: "100,0 - 34,5 = 65,5." },
+            { id: 28, q: "HCN có rộng 4m, dài gấp 1,5 lần rộng. Chu vi là:", options: ["10 m", "20 m", "24 m", "12 m"], correct: 1, explain: "Dài = 6m. Chu vi = (6+4)x2 = 20m." },
+            { id: 29, q: "Số thập phân 0,009 bằng phân số nào?", options: ["9/10", "9/100", "9/1000", "90/100"], correct: 2, explain: "3 chữ số sau dấu phẩy là phần nghìn." },
+            { id: 30, q: "Trong số 15,482, giá trị chữ số 4 gấp chữ số 2 bao nhiêu lần?", options: ["2 lần", "20 lần", "200 lần", "100 lần"], correct: 2, explain: "4 phần mười (0,4) so với 2 phần nghìn (0,002). 0,4 : 0,002 = 200." }
+        ];
+
+        let userAnswers = new Array(questions.length).fill(null);
+        let startTime;
+
+        function startQuiz() {
+            const name = document.getElementById('student-name').value.trim();
+            if (!name) {
+                alert("Vui lòng nhập tên của em!");
+                return;
+            }
+            
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('submit-section').classList.remove('hidden');
+            document.getElementById('timer').classList.remove('hidden');
+            
+            renderQuestions();
+            startTimer();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = questions.map((q, index) => `
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 question-card" id="q-${index}">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full">Câu ${index + 1}</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">${q.q}</h3>
+                    <div class="space-y-3">
+                        ${q.options.map((opt, i) => `
+                            <label class="option-label block relative group">
+                                <input type="radio" name="question-${index}" value="${i}" class="option-input sr-only" onchange="selectAnswer(${index}, ${i})">
+                                <div class="option-content p-4 rounded-lg border-2 border-gray-200 hover:border-blue-300 flex items-center">
+                                    <span class="w-6 h-6 flex items-center justify-center rounded-full border border-gray-400 mr-3 text-sm font-bold text-gray-500 group-hover:border-blue-400">${String.fromCharCode(65+i)}</span>
+                                    <span>${opt}</span>
+                                </div>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="explanation hidden mt-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border-l-4 border-yellow-400">
+                        <strong>Giải thích:</strong> ${q.explain}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectAnswer(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+        }
+
+        function submitQuiz() {
+            const unanswered = userAnswers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if (!confirm(`Em còn ${unanswered} câu chưa làm. Em có chắc chắn muốn nộp bài không?`)) {
+                    return;
+                }
+            }
+
+            let score = 0;
+            questions.forEach((q, index) => {
+                const card = document.getElementById(`q-${index}`);
+                const options = card.querySelectorAll('.option-content');
+                const explanation = card.querySelector('.explanation');
+                const inputs = card.querySelectorAll('input');
+
+                // Disable inputs
+                inputs.forEach(input => input.disabled = true);
+
+                // Show visual feedback
+                if (userAnswers[index] === q.correct) {
+                    score++;
+                    options[userAnswers[index]].classList.add('correct-answer');
+                } else {
+                    if (userAnswers[index] !== null) {
+                        options[userAnswers[index]].classList.add('wrong-answer');
+                    }
+                    options[q.correct].classList.add('correct-answer'); // Show correct answer
+                }
+                
+                // Show explanation
+                explanation.classList.remove('hidden');
+            });
+
+            // Show results
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('submit-section').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('timer').classList.add('hidden');
+
+            const percent = Math.round((score / questions.length) * 100);
+            document.getElementById('score-display').innerText = `${score}/${questions.length}`;
+            document.getElementById('score-percent').innerText = `${percent}% - Điểm: ${(score/questions.length*10).toFixed(1)}`;
+            
+            let msg = "";
+            if (percent === 100) msg = "Xuất sắc! Em là thiên tài toán học!";
+            else if (percent >= 80) msg = "Rất tốt! Em nắm bài rất chắc.";
+            else if (percent >= 50) msg = "Khá tốt, nhưng em cần ôn lại một số câu sai nhé.";
+            else msg = "Em cần cố gắng ôn tập thêm nhé!";
+            
+            document.getElementById('feedback-msg').innerText = msg;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function reviewAnswers() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            // Add a back button at the bottom of quiz container for this mode if needed
+        }
+
+        function startTimer() {
+            startTime = new Date();
+            setInterval(() => {
+                const now = new Date();
+                const diff = Math.floor((now - startTime) / 1000);
+                const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                const s = (diff % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+	</script>
+</body>
+
+</html>
